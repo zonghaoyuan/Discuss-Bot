@@ -4,7 +4,7 @@ permissions: write-all              # 授予写权限
 
 on: 
   schedule:
-    - cron: '0 2 * * *'             # 每日凌晨2点触发
+    - cron: '0 18 * * *'             # 每日中国时间凌晨2点触发
   workflow_dispatch:                # 允许手动触发工作流
 
 jobs:
@@ -18,7 +18,6 @@ jobs:
         id: sync
         uses: aormsby/Fork-Sync-With-Upstream-action@v3.4.1
         with:
-            # 所需的“target_repo_token”与此完全相同！
             target_repo_token: ${{ secrets.GITHUB_TOKEN }}
             target_sync_branch: main
             upstream_sync_branch: main
@@ -29,6 +28,8 @@ jobs:
 
       - name: Sync check
         if: failure()
+        env:
+          TZ: Asia/Shanghai  # 设置时区为中国时区
         run: |
           echo "[Error] 由于上游仓库的 workflow 文件变更，导致 GitHub 自动暂停了本次自动更新，你需要手动 Sync Fork 一次。"
           exit 1
