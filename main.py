@@ -189,13 +189,13 @@ class LinuxDoBrowser:
 
             # 打印浏览的文章信息
             logging.info("--------------浏览的文章信息-----------------")
-            print(tabulate(browsed_articles, headers="keys", tablefmt="pretty"))
+            logging.info("\n%s",tabulate(browsed_articles, headers="keys", tablefmt="pretty"))
 
             # 打印点赞的文章信息
             logging.info(f"一共点赞了 {like_count} 篇文章。")
             if like_count > 0:
                 logging.info("--------------点赞的文章信息-----------------")
-                print(tabulate(liked_articles, headers="keys", tablefmt="pretty"))
+                logging.info("\n%s",tabulate(liked_articles, headers="keys", tablefmt="pretty"))
 
         except Exception as e:
             logging.error(f"处理主题时出错: {e}")
