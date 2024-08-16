@@ -1,0 +1,26 @@
+name: Sync Fork
+
+on:
+  schedule:
+    - cron: '0 2 * * *'  # 每日凌晨2点触发
+  workflow_dispatch: # 允许手动触发工作流
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+      with:
+        ref: main # 这里填写你的主要分支名称
+
+    - name: Sync with upstream
+      run: |
+        git remote add upstream https://github.com/LeeYouRan/linux.do-bot.git
+        git fetch upstream
+        git checkout main
+        git merge upstream/main
+        git push origin main
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
