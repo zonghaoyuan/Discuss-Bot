@@ -212,6 +212,11 @@ jobs:
 - 在 WxPusher 的管理后台确认 `appToken` 是否启用，以及 `topicId` 是否可用。
 - WxPusher官册：https://wxpusher.zjiecode.com/ 查看官方手册
 
+### 4.4 WxPusher 运行发送的消息是？
+- ![](https://github.com/LeeYouRan/linux.do-bot/blob/main/wxPusher.png)
+
+- ![](https://github.com/LeeYouRan/linux.do-bot/blob/main/wxPusherMsg.png)
+
 ---
 
 按照以上指南配置并运行脚本后，您将能够在不同环境下自动浏览和点赞 `Linux.do` 的帖子，并根据配置接收通知。
