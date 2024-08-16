@@ -85,7 +85,7 @@ playwright install
 
 ### 2.2 配置文件
 
-在服务器的 `/etc/linuxdo/` 目录下创建 `config.ini` 文件：
+在服务器main.py的同级目录 `./` 目录下创建 `config.ini` 文件：
 
 ```ini
 [credentials]
