@@ -296,24 +296,84 @@ reply_path = resource_path("reply.txt")
 
 通过这种方法，你可以将 Python 脚本和必要的配置文件一起打包，生成一个独立的 `.exe` 文件，方便分发和使用。
 
-## 五、常见问题
 
-### 5.1 如何调试登录失败的问题？
+## 五、使用 Docker 运行项目
+
+### 5.1 . **构建 Docker 镜像 或者拉取镜像**：
+```
+    docker build -t linux-do-bot .
+```
+OR：
+```
+docker pull lee0692/linux-do-bot:latest
+```
+
+### 5.2. **运行 Docker 容器**：
+```
+    docker run -d --name linux-do-bot-container \
+      -e LINUXDO_USERNAME=your_username \
+      -e LINUXDO_PASSWORD=your_password \
+      -e LIKE_PROBABILITY=0.5 \
+      -e REPLY_PROBABILITY=0.5 \
+      -e COLLECT_PROBABILITY=0.5 \
+      -e MAX_TOPICS=10 \
+      -e USE_WXPUSHER=false \
+      -e APP_TOKEN=your_app_token \
+      -e TOPIC_ID=your_topic_id \
+      linux-do-bot
+```
+
+   - 替换环境变量的值以匹配你的实际配置。
+   - 你可以通过编辑 `config.ini` 文件来调整配置。
+
+### 5.3. **使用 Docker Compose（可选）**
+- 如果你的项目将来需要更多服务，可以使用 docker-compose.yml 文件来管理多个容器。创建一个 docker-compose.yml 文件，内容示例：
+```
+  version: '3'
+services:
+  app:
+    build: .
+    container_name: linux-do-bot-container
+    environment:
+      - LINUXDO_USERNAME=your_username
+      - LINUXDO_PASSWORD=your_password
+      - LIKE_PROBABILITY=0.5
+      - REPLY_PROBABILITY=0.5
+      - COLLECT_PROBABILITY=0.5
+      - MAX_TOPICS=10
+      - USE_WXPUSHER=false
+      - APP_TOKEN=your_app_token
+      - TOPIC_ID=your_topic_id
+    command: python main.py
+```
+- 然后使用 Docker Compose 来构建和运行容器：
+```
+  docker-compose up --build
+```
+
+### 5.4 其他说明
+
+- **配置文件**：`config.ini` 文件可以通过 Docker Volume 挂载到容器中，以便在运行时修改配置。
+- **时区设置**：默认时区设置为中国时区（Asia/Shanghai）。
+
+## 六、常见问题
+
+### 6.1 如何调试登录失败的问题？
 
 - 确保用户名和密码正确配置在环境变量或配置文件中。
 - 尝试手动访问登录页面，检查登录元素的类名或 ID 是否有变化。
 
-### 5.2 如何调整点赞概率？
+### 6.2 如何调整点赞概率？
 
 在 `config.ini` 文件或环境变量中修改 `LIKE_PROBABILITY` 的值，例如将 `0.02` 修改为 `0.05`，意味着 5% 的概率会点赞。
 
-### 5.3 WxPusher 配置失败怎么办？
+### 6.3 WxPusher 配置失败怎么办？
 
 - 确保 `APP_TOKEN` 和 `TOPIC_ID` 配置正确。
 - 在 WxPusher 的管理后台确认 `appToken` 是否启用，以及 `topicId` 是否可用。
 - WxPusher官册：https://wxpusher.zjiecode.com/ 查看官方手册
 
-### 5.4 WxPusher 运行发送的消息是？
+### 6.4 WxPusher 运行发送的消息是？
 - ![](https://github.com/LeeYouRan/linux.do-bot/blob/main/assets/wxPusher.png)
 
 - ![](https://github.com/LeeYouRan/linux.do-bot/blob/main/assets/wxPusherMsg.png)
