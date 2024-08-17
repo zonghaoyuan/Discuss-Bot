@@ -1,4 +1,4 @@
-这个脚本用于自动化操作以保持 Linux.do 网站的活跃状态，包括浏览帖子并进行点赞，以及通过WxPusher推送消息到微信(可选)。
+这个脚本用于自动化操作以保持 Linux.do 网站的活跃状态，包括浏览帖子并进行点赞，以及通过WxPusher推送消息到微信(可选)、自动回复帖子(可选)、自动加入书签(可选)。
 
 下面是详细介绍如何在 Windows、Linux 服务器、GitHub Workflow 中配置并运行此 `Linux.do保活脚本` 的 Markdown 文档。
 
@@ -8,7 +8,7 @@
 
 ## 概述
 
-本指南将详细介绍如何在不同环境下（Windows、Linux 服务器、GitHub Workflow）配置并运行 `Linux.do保活脚本`。该脚本通过 Playwright 自动化操作对 `Linux.do` 网站的帖子进行浏览和点赞，并支持通过 WxPusher 发送通知。
+本指南将详细介绍如何在不同环境下（Windows、Linux 服务器、GitHub Workflow）配置并运行 `Linux.do保活脚本`。该脚本通过 Playwright 自动化操作对 `Linux.do` 网站的帖子进行浏览、点赞、加入书签和自动回复，并支持通过 WxPusher 发送通知。
 
 ## 环境依赖
 
@@ -23,6 +23,8 @@
 - USERNAME: 登录 Linux.do 的用户名。
 - PASSWORD: 登录 Linux.do 的密码。
 - LIKE_PROBABILITY: 点赞概率，值在 0 和 1 之间，例如 0.02 表示 2% 的概率点赞。
+- REPLY_PROBABILITY: 回复概率，值在 0 和 1 之间，例如 0.02 表示 2% 的概率回复。
+- COLLECT_PROBABILITY: 加入书签概率，值在 0 和 1 之间，例如 0.02 表示 2% 的概率加入书签。
 - HOME_URL: Linux.do 的主页 URL，默认为 https://linux.do/。
 - CONNECT_URL: 连接信息页面的 URL，默认为 https://connect.linux.do/。
 - USE_WXPUSHER: 是否使用 wxpusher 发送消息通知，true 或 false。
@@ -52,6 +54,8 @@ password = your_password
 
 [settings]
 like_probability = 0.02
+reply_probability=0.02
+collect_probability=0.02
 max_topics = 10
 
 [urls]
@@ -94,6 +98,8 @@ password = your_password
 
 [settings]
 like_probability = 0.02
+reply_probability=0.02
+collect_probability=0.02
 max_topics = 10
 
 [urls]
@@ -141,6 +147,8 @@ python3 main.py
 - `LINUXDO_USERNAME`
 - `LINUXDO_PASSWORD`
 - `LIKE_PROBABILITY`
+- `REPLY_PROBABILITY`
+- `COLLECT_PROBABILITY`
 - `MAX_TOPICS`
 - `USE_WXPUSHER`（值为 `true` 或 `false`）
 - `APP_TOKEN`（如果 `USE_WXPUSHER` 为 `true`）
@@ -183,6 +191,8 @@ jobs:
         LINUXDO_USERNAME: ${{ secrets.LINUXDO_USERNAME }}
         LINUXDO_PASSWORD: ${{ secrets.LINUXDO_PASSWORD }}
         LIKE_PROBABILITY: ${{ secrets.LIKE_PROBABILITY }}
+        REPLY_PROBABILITY: ${{ secrets.REPLY_PROBABILITY }}
+        COLLECT_PROBABILITY: ${{ secrets.COLLECT_PROBABILITY }}
         MAX_TOPICS: ${{ secrets.MAX_TOPICS }}
         USE_WXPUSHER: ${{ secrets.USE_WXPUSHER }}
         APP_TOKEN: ${{ secrets.APP_TOKEN }}
