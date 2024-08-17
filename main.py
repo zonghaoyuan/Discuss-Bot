@@ -62,6 +62,8 @@ config = load_config()
 USERNAME = os.getenv("LINUXDO_USERNAME", config.get('credentials', 'username', fallback=None))
 PASSWORD = os.getenv("LINUXDO_PASSWORD", config.get('credentials', 'password', fallback=None))
 LIKE_PROBABILITY = float(os.getenv("LIKE_PROBABILITY", config.get('settings', 'like_probability', fallback='0.02')))
+REPLY_PROBABILITY = float(os.getenv("REPLY_PROBABILITY", config.get('settings', 'reply_probability', fallback='0.02')))
+COLLECT_PROBABILITY = float(os.getenv("COLLECT_PROBABILITY", config.get('settings', 'collect_probability', fallback='0.02')))
 HOME_URL = config.get('urls', 'home_url', fallback="https://linux.do/")
 CONNECT_URL = config.get('urls', 'connect_url', fallback="https://connect.linux.do/")
 USE_WXPUSHER = os.getenv("USE_WXPUSHER", config.get('wxpusher', 'use_wxpusher', fallback='false')).lower() == 'true'
@@ -127,6 +129,18 @@ class LinuxDoBrowser:
         self.page.goto(HOME_URL)
         logging.info("初始化完成。")
 
+    def load_messages(self, filename):
+        """从指定的文件加载消息并返回消息列表。"""
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        file_path = os.path.join(script_dir, filename)
+        with open(file_path, 'r', encoding='utf-8') as file:
+            messages = file.readlines()
+        return [message.strip() for message in messages if message.strip()]
+
+    def get_random_message(self, messages):
+        """从列表中选择一个随机消息。"""
+        return random.choice(messages)
+
     def login(self) -> bool:
         try:
             logging.info("尝试登录...")
@@ -164,6 +178,10 @@ class LinuxDoBrowser:
             browsed_articles = []
             liked_articles = []
             like_count = 0
+            replied_articles = []
+            reply_count = 0
+            collected_articles = []
+            collect_count = 0
 
             for idx, topic in enumerate(topics):
                 article_title = topic.text_content().strip()
@@ -179,6 +197,16 @@ class LinuxDoBrowser:
                         self.click_like(page)
                         liked_articles.append({"title": article_title, "url": article_url})
                         like_count += 1
+                    if random.random() < REPLY_PROBABILITY:
+                        reply_message = self.click_reply(page)
+                        if reply_message:
+                            replied_articles.append(
+                                {"title": article_title, "url": article_url, "reply": reply_message})
+                            reply_count += 1
+                    if random.random() < COLLECT_PROBABILITY:
+                        self.click_collect(page)
+                        collected_articles.append({"title": article_title, "url": article_url})
+                        collect_count += 1
 
                 except TimeoutError:
                     logging.warning(f"打开主题 ： {article_title} 超时，跳过该主题。")
@@ -196,6 +224,18 @@ class LinuxDoBrowser:
             if like_count > 0:
                 logging.info("--------------点赞的文章信息-----------------")
                 logging.info("\n%s",tabulate(liked_articles, headers="keys", tablefmt="pretty"))
+
+           # 打印回复的文章信息
+            logging.info(f"一共回复了 {reply_count} 篇文章。")
+            if reply_count > 0:
+                logging.info("--------------回复的文章信息-----------------")
+                logging.info("\n%s",tabulate(replied_articles, headers="keys", tablefmt="pretty"))
+
+            # 打印加入书签的文章信息
+            logging.info(f"一共加入书签了 {collect_count} 篇文章。")
+            if collect_count > 0:
+                logging.info("--------------加入书签的文章信息-----------------")
+                logging.info("\n%s", tabulate(collected_articles, headers="keys", tablefmt="pretty"))
 
         except Exception as e:
             logging.error(f"处理主题时出错: {e}")
@@ -267,6 +307,69 @@ class LinuxDoBrowser:
         except Exception as e:
             logging.error(f"点赞操作失败: {e}")
 
+    def click_reply(self, page):
+        try:
+            # 从文件加载消息
+            messages = self.load_messages('reply.txt')
+
+            # Select a random message
+            random_message = self.get_random_message(messages)
+
+            # 选择一条随机消息
+            page.wait_for_selector(".reply.create.btn-icon-text", timeout=2000)
+            reply_button = page.locator(".reply.create.btn-icon-text").first
+            if reply_button:
+                reply_button.click()
+                logging.info("回复按钮已点击")
+
+                # 等待文本区域可见
+                page.wait_for_selector(".d-editor-input", timeout=2000)
+                text_area = page.locator(".d-editor-input").first
+                if text_area:
+                    # 在文本区域中键入随机消息
+                    text_area.fill(random_message)
+                    logging.info(f"回复内容: {random_message}")
+
+                    # 点击提交按钮
+                    page.wait_for_selector(".save-or-cancel .btn-primary.create", timeout=2000)
+                    submit_button = page.locator(".save-or-cancel .btn-primary.create").first
+                    if submit_button:
+                        time.sleep(2)
+                        submit_button.click()
+                        logging.info("回复已提交")
+                        return random_message  # 返回实际的回复内容
+                    else:
+                        logging.warning("未找到提交按钮")
+                else:
+                    logging.warning("未找到回复文本框")
+            else:
+                logging.info("未找到回复按钮")
+            return None  # 如果回复失败，返回 None
+
+        except TimeoutError:
+            logging.warning("元素定位超时")
+            return None
+        except Exception as e:
+            logging.error(f"回复操作失败: {e}")
+            return None
+
+    def click_collect(self, page):
+        try:
+            # 等待并点击书签按钮
+            page.wait_for_selector(".btn.bookmark-menu-trigger", timeout=2000)  # 增加等待时间
+            bookmark_button = page.locator(".btn.bookmark-menu-trigger").first
+            if bookmark_button:
+                # 等待几秒钟以确保加入书签操作已完成
+                time.sleep(2)
+                bookmark_button.click()
+                logging.info("帖子已加入书签")
+            else:
+                logging.warning("未找到书签按钮")
+
+        except TimeoutError:
+            logging.warning("书签按钮定位超时")
+        except Exception as e:
+            logging.error(f"加入书签操作失败: {e}")
 
 
 if __name__ == "__main__":
