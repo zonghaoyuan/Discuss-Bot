@@ -1,0 +1,19 @@
+# 忽略 Git 目录和文件
+.git
+.gitignore
+
+# 忽略 Python 缓存文件
+__pycache__/
+*.pyc
+*.pyo
+
+# 忽略 IDE 配置文件
+.vscode/
+.idea/
+
+# 忽略 GitHub Actions 配置文件
+.github/
+
+# 忽略 Docker 配置文件
+Dockerfile
+docker-compose.yml
