@@ -21,6 +21,24 @@
 
 本指南将详细介绍如何在不同环境下（Windows、Linux 服务器、GitHub Workflow）配置并运行 `Linux.do保活脚本`。该脚本通过 Playwright 自动化操作对 `Linux.do` 网站的帖子进行浏览、点赞、加入书签和自动回复，并支持通过 WxPusher 发送通知。
 
+## 项目目录结构
+
+```plaintext
+- .github/
+  - workflows/
+    - run-linuxdo.yml
+    - sync.yml
+- assets/
+  - wxPusher.png
+  - wxPusherMsg.png
+- .gitignore
+- LICENSE
+- README.md
+- config.ini
+- main.py
+- reply.txt
+```
+
 ## 环境依赖
 
 - Python 3.7+
