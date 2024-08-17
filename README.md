@@ -1,8 +1,19 @@
+# 简介
 这个脚本用于自动化操作以保持 Linux.do 网站的活跃状态，包括浏览帖子并进行点赞，以及通过WxPusher推送消息到微信(可选)、自动回复帖子(可选)、自动加入书签(可选)。
 
 下面是详细介绍如何在 Windows、Linux 服务器、GitHub Workflow 中配置并运行此 `Linux.do保活脚本` 的 Markdown 文档。
 
 ---
+
+# 注意事项
+虽然此功能支持自动回复，但不建议启用。
+
+因为论坛禁止AI生成的内容，自动回复功能可能也被包含在内。
+
+从技术上讲，确实有办法规避检测，想要搞的可以自己研究，但是后果也需要自己承担。
+
+---
+
 
 # Linux.do 保活脚本配置与运行指南
 
@@ -285,9 +296,9 @@ reply_path = resource_path("reply.txt")
 - WxPusher官册：https://wxpusher.zjiecode.com/ 查看官方手册
 
 ### 5.4 WxPusher 运行发送的消息是？
-- ![](https://github.com/LeeYouRan/linux.do-bot/blob/main/wxPusher.png)
+- ![](https://github.com/LeeYouRan/linux.do-bot/blob/main/assets/wxPusher.png)
 
-- ![](https://github.com/LeeYouRan/linux.do-bot/blob/main/wxPusherMsg.png)
+- ![](https://github.com/LeeYouRan/linux.do-bot/blob/main/assets/wxPusherMsg.png)
 
 ---
 
