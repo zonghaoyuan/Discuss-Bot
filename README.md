@@ -205,24 +205,86 @@ jobs:
 
 提交或合并代码到 `main` 分支，GitHub Actions 会自动触发 Workflow 并运行脚本。你可以在 GitHub 的 Actions 页面查看运行日志。
 
-## 四、常见问题
+## 四、如果你想打包成exe
 
-### 4.1 如何调试登录失败的问题？
+要将 `main.py`、`config.ini` 和 `reply.txt` 一起打包成一个可执行的 `.exe` 文件，你可以按照以下步骤进行：
+
+### 4.1. 安装 PyInstaller
+
+确保你的环境中已经安装了 `PyInstaller`。如果没有安装，可以使用以下命令进行安装：
+
+```bash
+pip install pyinstaller
+```
+
+### 4.2. 配置打包命令
+
+你可以使用以下命令将 `main.py`、`config.ini` 和 `reply.txt` 打包成一个 `.exe` 文件：
+
+```bash
+pyinstaller --onefile --add-data "config.ini;." --add-data "reply.txt;." main.py
+```
+
+### 4.3. 说明
+
+- `--onefile`：将所有依赖打包成一个独立的 `.exe` 文件。
+- `--add-data "config.ini;."`：将 `config.ini` 文件包含在打包的 `.exe` 文件中，放置在当前目录下（`.` 表示当前目录）。
+- `--add-data "reply.txt;."`：将 `reply.txt` 文件也包含在打包的 `.exe` 文件中，放置在当前目录下。
+
+### 4.4. 打包完成
+
+执行命令后，`PyInstaller` 会在项目目录下生成一个 `dist` 目录，里面包含打包好的 `main.exe` 文件。
+
+### 4.5. 修改 `main.py` 以适应打包后的路径
+
+在打包后的 `.exe` 文件中，访问资源文件（如 `config.ini` 和 `reply.txt`）时，文件的路径会有所不同。你可以使用以下代码来动态获取资源文件的路径：
+
+```python
+import sys
+import os
+
+def resource_path(relative_path):
+    """获取资源文件的绝对路径"""
+    try:
+        # PyInstaller创建临时文件夹，并将路径存储在 _MEIPASS 中
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
+
+# 示例：加载 config.ini 和 reply.txt
+config_path = resource_path("config.ini")
+reply_path = resource_path("reply.txt")
+
+# 继续编写代码以加载和使用这些文件
+```
+
+### 4.6. 运行 .exe 文件
+
+生成的 `.exe` 文件可以直接运行，配置文件 `config.ini` 和 `reply.txt` 会正确加载，无需手动复制到运行目录。
+
+### 总结
+
+通过这种方法，你可以将 Python 脚本和必要的配置文件一起打包，生成一个独立的 `.exe` 文件，方便分发和使用。
+
+## 五、常见问题
+
+### 5.1 如何调试登录失败的问题？
 
 - 确保用户名和密码正确配置在环境变量或配置文件中。
 - 尝试手动访问登录页面，检查登录元素的类名或 ID 是否有变化。
 
-### 4.2 如何调整点赞概率？
+### 5.2 如何调整点赞概率？
 
 在 `config.ini` 文件或环境变量中修改 `LIKE_PROBABILITY` 的值，例如将 `0.02` 修改为 `0.05`，意味着 5% 的概率会点赞。
 
-### 4.3 WxPusher 配置失败怎么办？
+### 5.3 WxPusher 配置失败怎么办？
 
 - 确保 `APP_TOKEN` 和 `TOPIC_ID` 配置正确。
 - 在 WxPusher 的管理后台确认 `appToken` 是否启用，以及 `topicId` 是否可用。
 - WxPusher官册：https://wxpusher.zjiecode.com/ 查看官方手册
 
-### 4.4 WxPusher 运行发送的消息是？
+### 5.4 WxPusher 运行发送的消息是？
 - ![](https://github.com/LeeYouRan/linux.do-bot/blob/main/wxPusher.png)
 
 - ![](https://github.com/LeeYouRan/linux.do-bot/blob/main/wxPusherMsg.png)
