@@ -291,6 +291,20 @@ class LinuxDoBrowser:
             self.page.goto(CONNECT_URL)
             time.sleep(2)
             logging.info(f"当前页面URL: {self.page.url}")
+            time.sleep(2)
+            rows = self.page.query_selector_all("table tr")
+            info = []
+            for row in rows:
+                cells = row.query_selector_all("td")
+                if len(cells) >= 3:
+                    project = cells[0].text_content().strip()
+                    current = cells[1].text_content().strip()
+                    requirement = cells[2].text_content().strip()
+                    info.append([project, current, requirement])
+
+            logging.info("--------------Connect Info-----------------")
+            logging.info("\n%s", tabulate(info, headers=["项目", "当前", "要求"], tablefmt="pretty"))
+            self.page.close()
         except TimeoutError:
             logging.error("连接信息页面加载超时")
         except Exception as e:
