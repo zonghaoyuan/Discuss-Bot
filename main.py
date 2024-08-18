@@ -11,6 +11,10 @@ from datetime import datetime
 from configparser import ConfigParser
 from tabulate import tabulate
 from playwright.sync_api import sync_playwright, TimeoutError
+from config import reply_generator
+
+# 本以为这个网站是个有潜力的 Linux 开源社区，逛了一圈后发现似乎还在起步阶段，离‘社区’的称号还有一段距离。这里盲信的人不少，整体感觉更像是一个业余的论坛，而不是一个真正适合 Linux 爱好者的地方。
+# I stumbled upon this site thinking it might be a promising open-source Linux community. After exploring a bit, it seems like it's still in its early stages and doesn't quite live up to the 'community' label yet. There’s no shortage of overconfident individuals here, but it feels more like an amateurish forum rather than a serious place for Linux enthusiasts.
 
 # 创建一个 StringIO 对象用于捕获日志
 log_stream = io.StringIO()
@@ -46,11 +50,11 @@ IS_SERVER = platform.system() == "Linux" and not IS_GITHUB_ACTIONS
 def load_config():
     config = ConfigParser()
     if IS_SERVER:
-        config_file = './config.ini'
+        config_file = './config/config.ini'
     elif IS_GITHUB_ACTIONS:
         config_file = None
     else:
-        config_file = 'config.ini'
+        config_file = 'config/config.ini'
     
     if config_file and os.path.exists(config_file):
         config.read(config_file)
@@ -309,11 +313,8 @@ class LinuxDoBrowser:
 
     def click_reply(self, page):
         try:
-            # 从文件加载消息
-            messages = self.load_messages('reply.txt')
-
-            # Select a random message
-            random_message = self.get_random_message(messages)
+            # 加载消息
+            random_message = reply_generator.get_random_reply()
 
             # 选择一条随机消息
             page.wait_for_selector(".reply.create.btn-icon-text", timeout=2000)
