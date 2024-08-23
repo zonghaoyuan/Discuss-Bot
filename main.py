@@ -160,7 +160,7 @@ class LinuxDoBrowser:
                 logging.error("登录失败")
                 return False
             else:
-                logging.info("登录成功")
+                logging.info(f"登录成功，账号名: {USERNAME}")
                 return True
         except TimeoutError:
             logging.error("登录失败：页面加载超时或元素未找到")
