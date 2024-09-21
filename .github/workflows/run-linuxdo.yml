@@ -1,12 +1,11 @@
-name: Run Linux.do Script
+name: Run bot Script
 
 on:
   push:
     branches:
       - main
   schedule:
-    - cron: '0 */6 * * *'  # 每隔6个小时触发一次
-  workflow_dispatch: # 允许手动触发
+    - cron: '0 0 * * *'  # 每天 UTC 时间午夜运行一次
 
 jobs:
   run-linuxdo:
@@ -28,7 +27,6 @@ jobs:
 
     - name: Run script
       env:
-        TZ: Asia/Shanghai  # 设置时区为中国时区
         LINUXDO_USERNAME: ${{ secrets.LINUXDO_USERNAME }}
         LINUXDO_PASSWORD: ${{ secrets.LINUXDO_PASSWORD }}
         LIKE_PROBABILITY: ${{ secrets.LIKE_PROBABILITY }}
