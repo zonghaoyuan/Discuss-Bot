@@ -6,6 +6,7 @@ on:
       - main
   schedule:
     - cron: '30 3 * * *'  # 每天凌晨 3:30（UTC 时间）
+    workflow_dispatch: # 允许手动触发
 
 jobs:
   run-linuxdo:
