@@ -5,7 +5,7 @@ on:
     branches:
       - main
   schedule:
-    - cron: '35 19 * * *'  # 每天凌晨 3:30（UTC 时间）
+    - cron: '40 19 * * *'  # 每天凌晨 3:30（UTC 时间）
 
 jobs:
   run-linuxdo:
